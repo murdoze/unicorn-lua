@@ -136,7 +136,7 @@ the BIOS setting up a system when booting.
 
     -- Create a hook for the VGA driver that's called whenever VGA memory is
     -- written to by client code.
-    uc:hook_add(uc_const.UC_MEM_WRITE, vga_write_callback, 0xA0000, 0xBFFFF)
+    uc:hook_add(uc_const.UC_HOOK_MEM_WRITE, vga_write_callback, 0xA0000, 0xBFFFF)
 
     -- Install interrupt hooks so the CPU can perform I/O and other operations.
     -- We'll handle all of that in Lua. Only one interrupt hook can be set at a
