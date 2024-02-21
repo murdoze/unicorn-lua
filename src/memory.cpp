@@ -30,10 +30,13 @@ int ul_mem_read(lua_State* L)
     std::unique_ptr<char[]> data(new char[length]);
     uc_err error = uc_mem_read(engine, address, data.get(), length);
     if (error != UC_ERR_OK)
-        ul_crash_on_error(L, error);
-
+    {
+        ul_return_error(L, error);
+        return 2;
+    }
+    lua_pushboolean(L, true);
     lua_pushlstring(L, data.get(), length);
-    return 1;
+    return 2;
 }
 
 int ul_mem_map(lua_State* L)
