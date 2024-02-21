@@ -7,15 +7,15 @@
 # DEFAULTS
 # These are only used when this Makefile is run manually. You should only be
 # doing that for `make clean`. Use `luarocks` for everything else.
-
+CC=g++
 CURL = curl
 LIB_EXTENSION = so
-LUA = lua
-LUA_DIR = /usr/local
+LUA = luajit
+LUA_DIR = /usr
 LUAROCKS = luarocks
 MKDIR = mkdir
 OBJ_EXTENSION = o
-UNICORN_INCDIR = /usr/include
+UNICORN_INCDIR = /usr/local/include
 
 ################################################################################
 
@@ -76,11 +76,11 @@ HEADER_DIRECTORIES = $(strip $(CURDIR)/include $(LUA_INCDIR) $(FALLBACK_LUA_INCD
 ifndef USER_CXX_FLAGS
     USER_CXX_FLAGS =
 endif
-OTHER_CXXFLAGS = -std=c++11 -DIS_LUAJIT=$(IS_LUAJIT)
+OTHER_CXXFLAGS = -std=c++11 -fPIC -DIS_LUAJIT=$(IS_LUAJIT)
 WARN_FLAGS = -Wall -Wextra -Werror -Wpedantic -pedantic-errors
 INCLUDE_PATH_FLAGS = $(addprefix -I,$(HEADER_DIRECTORIES))
 LIB_PATH_FLAGS = $(addprefix -L,$(LIBRARY_DIRECTORIES))
-REQUIRED_LIBS = unicorn pthread stdc++
+REQUIRED_LIBS = unicorn pthread m c unwind stdc++
 REQUIRED_LIBS_FLAGS = $(addprefix -l,$(REQUIRED_LIBS))
 
 # LUALIB isn't always provided. This breaks building our tests on LuaJIT, which
@@ -170,7 +170,7 @@ $(DOCTEST_HEADER):
 
 
 $(LIB_BUILD_TARGET): $(LIB_OBJECT_FILES) | $(BUILD_DIR)
-	$(LINK_CMD) $(LIBFLAG) -o $@ $^ $(REQUIRED_LIBS_FLAGS)
+	$(LINK_CMD) $(LIBFLAG) -shared -o $@ $^ $(REQUIRED_LIBS_FLAGS) $(LINK_TO_LUA_FLAG)
 
 
 $(TEST_EXECUTABLE): $(DOCTEST_HEADER) $(TEST_CPP_OBJECT_FILES) $(LIB_OBJECT_FILES) $(TEST_HEADERS)
@@ -188,12 +188,12 @@ $(CONSTS_DIR)/%_const.cpp: $(UNICORN_INCDIR)/unicorn/%.h | $(CONSTS_DIR)
 
 %.cpp: %.template $(TEMPLATE_DATA_FILES)
 	@echo "Generating $@"
-	$(SET_SEARCH_PATHS); $(LUA) tools/render_template.lua -o $@ $^
+	$(SET_SEARCH_PATHS); $(LUA) tools/render_template.lua -D X -o $@ $^
 
 
 %.hpp: %.template $(TEMPLATE_DATA_FILES)
 	@echo "Generating $@"
-	$(SET_SEARCH_PATHS); $(LUA) tools/render_template.lua -o $@ $^
+	$(SET_SEARCH_PATHS); $(LUA) tools/render_template.lua -D X -o $@ $^
 
 
 $(CONSTS_DIR) $(BUILD_DIR):
