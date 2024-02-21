@@ -176,7 +176,17 @@ function maybe_extract_enum(tokenizer)
         ttype, text = tokenizer()
         if ttype == "}" then
             return constants
-        elseif ttype ~= "iden" then
+        end
+
+        while ttype == "space" do
+            ttype, text = tokenizer()
+        end
+
+        if ttype == "}" then
+            return constants
+        end
+
+        if ttype ~= "iden" then
             pl_utils.quit(
                 1,
                 "Expected identifier on line %s",
