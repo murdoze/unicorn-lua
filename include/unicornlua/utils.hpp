@@ -14,6 +14,16 @@
 #include "unicornlua/lua.hpp"
 
 /**
+ * Returns false and error message derived from the given Unicorn error code.
+ * This is needed because LuaJIT, neither standalone nor one in NeoVim can handle lua_error() even with pcall()
+ *
+ * @param L         A pointer to the current Lua state.
+ * @param error     A unicorn error code.
+ *
+ */
+void ul_return_error(lua_State* L, uc_err error);
+
+/**
  * Throw a Lua error with a message derived from the given Unicorn error code.
  *
  * @param L         A pointer to the current Lua state.

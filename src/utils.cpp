@@ -3,6 +3,14 @@
 #include "unicornlua/lua.hpp"
 #include "unicornlua/utils.hpp"
 
+void ul_return_error(lua_State* L, uc_err error)
+{
+    const char* message = uc_strerror(error);
+    lua_checkstack(L, 2);
+    lua_pushboolean(L, false);
+    lua_pushstring(L, message);
+}
+
 void ul_crash_on_error(lua_State* L, uc_err error)
 {
     const char* message = uc_strerror(error);
