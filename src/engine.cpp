@@ -93,13 +93,13 @@ void UCLuaEngine::remove_hook(Hook* hook)
     delete hook;
 }
 
-void UCLuaEngine::start(uint64_t start_addr, uint64_t end_addr,
+uc_err UCLuaEngine::start(uint64_t start_addr, uint64_t end_addr,
     uint64_t timeout, size_t n_instructions)
 {
     uc_err error = uc_emu_start(
         engine_handle_, start_addr, end_addr, timeout, n_instructions);
-    if (error != UC_ERR_OK)
-        throw UnicornLibraryError(error);
+
+    return error;
 }
 
 void UCLuaEngine::stop()
@@ -310,8 +310,14 @@ int ul_emu_start(lua_State* L)
     auto timeout = static_cast<uint64_t>(luaL_optinteger(L, 4, 0));
     auto n_instructions = static_cast<size_t>(luaL_optinteger(L, 5, 0));
 
-    engine->start(start, end, timeout, n_instructions);
-    return 0;
+    uc_err err = engine->start(start, end, timeout, n_instructions);
+    if (err != UC_ERR_OK)
+    {
+        ul_return_error(L, err);
+        return 2;
+    }
+    lua_pushboolean(L, true);
+    return 1;
 }
 
 int ul_emu_stop(lua_State* L)

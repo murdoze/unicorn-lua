@@ -55,7 +55,7 @@ public:
     void restore_from_context(Context* context);
     void free_context(Context* context);
 
-    void start(uint64_t start_addr, uint64_t end_addr, uint64_t timeout = 0,
+    uc_err start(uint64_t start_addr, uint64_t end_addr, uint64_t timeout = 0,
         size_t n_instructions = 0);
     void stop();
     void close();
