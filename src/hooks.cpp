@@ -233,6 +233,9 @@ static void generic_hook_with_no_arguments(uc_engine* uc, void* user_data)
     auto hook = reinterpret_cast<Hook*>(user_data);
     lua_State* L = hook->L();
 
+    // Push the callback function onto the stack.
+    get_callback(hook);
+
     ul_find_lua_engine(L, uc);
     hook->push_user_data();
     lua_call(L, 2, 0);
