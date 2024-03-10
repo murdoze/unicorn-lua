@@ -17,8 +17,12 @@ int ul_mem_write(lua_State* L)
 
     uc_err error = uc_mem_write(engine, address, data, length);
     if (error != UC_ERR_OK)
-        ul_crash_on_error(L, error);
-    return 0;
+    {
+        ul_return_error(L, error);
+        return 2;
+    }
+    lua_pushboolean(L, true);
+    return 1;
 }
 
 int ul_mem_read(lua_State* L)
@@ -48,8 +52,12 @@ int ul_mem_map(lua_State* L)
 
     uc_err error = uc_mem_map(engine, address, size, perms);
     if (error != UC_ERR_OK)
-        ul_crash_on_error(L, error);
-    return 0;
+    {
+        ul_return_error(L, error);
+        return 2;
+    }
+    lua_pushboolean(L, true);
+    return 1;
 }
 
 int ul_mem_unmap(lua_State* L)
