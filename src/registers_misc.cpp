@@ -217,8 +217,12 @@ int ul_reg_write(lua_State* L)
 
     uc_err error = uc_reg_write(engine, register_id, buffer);
     if (error != UC_ERR_OK)
-        ul_crash_on_error(L, error);
-    return 0;
+    {
+        ul_return_error(L, error);
+        return 2;
+    }
+    lua_pushboolean(L, true);
+    return 1;
 }
 
 int ul_reg_write_as(lua_State* L)
@@ -231,6 +235,30 @@ int ul_reg_write_as(lua_State* L)
     if (error != UC_ERR_OK)
         ul_crash_on_error(L, error);
     return 0;
+}
+
+int ul_reg_write_buf(lua_State* L)
+{
+    size_t size;
+
+    uc_engine* engine = ul_toengine(L, 1);
+    int register_id = static_cast<int>(luaL_checkinteger(L, 2));
+    const void* data = luaL_checklstring(L, 3, &size);
+
+    register_buffer_type buffer;
+    memset(buffer, 0, sizeof(buffer));
+    if (size > sizeof(buffer))
+        size = sizeof(buffer);
+    memcpy(buffer, data, size);
+
+    uc_err error = uc_reg_write2(engine, register_id, buffer, &size);
+    if (error != UC_ERR_OK)
+    {
+        ul_return_error(L, error);
+        return 2;
+    }
+    lua_pushboolean(L, true);
+    return 1;
 }
 
 int ul_reg_read(lua_State* L)

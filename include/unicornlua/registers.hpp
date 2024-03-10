@@ -335,6 +335,14 @@ int ul_reg_read_batch_as(lua_State* L);
 int ul_reg_write_as(lua_State* L);
 
 /**
+ * Write to a processor register as a byte buffer
+ *
+ * This is needed for GDTR, MSR and probably some other registers
+ *
+ */
+int ul_reg_write_buf(lua_State* L);
+
+/**
  * Read an x87 floating-point number as the host machine's native format.
  *
  * @warning There's no way to represent a signaling or "indefinite" NaN in C++.
