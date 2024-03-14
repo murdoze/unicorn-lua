@@ -68,8 +68,12 @@ int ul_mem_unmap(lua_State* L)
 
     uc_err error = uc_mem_unmap(engine, address, size);
     if (error != UC_ERR_OK)
-        ul_crash_on_error(L, error);
-    return 0;
+    {
+        ul_return_error(L, error);
+        return 2;
+    }
+    lua_pushboolean(L, true);
+    return 1;
 }
 
 int ul_mem_protect(lua_State* L)
